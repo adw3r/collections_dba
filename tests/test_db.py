@@ -6,7 +6,7 @@ def prune_db(func):
         if config.MYSQL_HOST != '127.0.0.1' or 'prod' in config.ENV_FILENAME:
             raise Exception('Can`t do this in production environment!')
 
-        with database.__create_connection() as con:
+        with database.create_connection() as con:
             cursor = con.cursor()
             cursor.execute('delete from list')
             cursor.execute('delete from domain')
@@ -27,7 +27,7 @@ def test_db_connection():
 
 @prune_db
 def test_delete_from_table():
-    with database.__create_connection() as con:
+    with database.create_connection() as con:
         database.delete_email_domain_list(con)
         emails_list = database.get_emails_list(con, 1)
         assert emails_list == []
@@ -36,33 +36,33 @@ def test_delete_from_table():
 @prune_db
 def test_insert_into_email():
     name = 'wezxasqw'
-    with database.__create_connection() as con:
-        name_id = database.insert_into_email(con, name)
+    with database.create_connection() as con:
+        name_id = database.insert_returning_id_into_email(con, name)
         assert name_id is not None
 
 
 @prune_db
 def test_insert_into_list():
     list_name = 'alotof'
-    with database.__create_connection() as con:
-        list_id = database.insert_into_list(con, list_name)
+    with database.create_connection() as con:
+        list_id = database.insert_returning_id_into_list(con, list_name)
         assert list_id is not None
 
 
 @prune_db
 def test_insert_into_domain():
     name = '1secmail.com'
-    with database.__create_connection() as con:
-        domain_id = database.insert_into_domain(con, name)
+    with database.create_connection() as con:
+        domain_id = database.insert_returning_id_into_domain(con, name)
         assert domain_id is not None
 
 
 @prune_db
 def test_insert_into_email_domain_list():
-    with database.__create_connection() as con:
-        domain_id = database.insert_into_domain(con, '1secmail.com')
-        email_id = database.insert_into_email(con, 'wezxasqw')
-        list_id = database.insert_into_list(con, 'alotof')
+    with database.create_connection() as con:
+        domain_id = database.insert_returning_id_into_domain(con, '1secmail.com')
+        email_id = database.insert_returning_id_into_email(con, 'wezxasqw')
+        list_id = database.insert_returning_id_into_list(con, 'alotof')
         database.insert_into_email_domain_list(con, email_id, domain_id, list_id)
 
         emails_list = database.get_emails_list(con, list_id)
@@ -73,7 +73,7 @@ def test_insert_into_email_domain_list():
 def test_insert_email_in_separate_transactions():
     email: str = 'wezxasqw@gmail.com'
     source_name: str = 'alotof'
-    with database.__create_connection() as con:
+    with database.create_connection() as con:
         result = database.insert_email_in_separate_transactions(con, email, source_name)
         print(result)
         assert result is not None
@@ -84,7 +84,7 @@ def test_get_emails_list():
     email: str = 'wezxasqw@gmail.com'
     source_name: str = 'alotof'
 
-    with database.__create_connection() as con:
+    with database.create_connection() as con:
         domain_id, email_id, list_id = database.insert_email_in_separate_transactions(con, email, source_name)
         emails_list = database.get_emails_list(con, domain_id)
         assert emails_list == ['wezxasqw@1secmail.com']

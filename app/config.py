@@ -14,6 +14,9 @@ config['general'] = os.environ
 environ = config['general']
 
 
+EMAILS_FOLDER = ROOT_FOLDER / 'emails'
+
+
 MYSQL_HOST: str = environ['MYSQL_HOST']
 MYSQL_PORT: int = environ.getint('MYSQL_PORT')
 MYSQL_USER: str = environ['MYSQL_USER']
