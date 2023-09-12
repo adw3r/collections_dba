@@ -25,7 +25,6 @@ def test_db_connection():
     assert database.ping() is True
 
 
-@prune_db
 def test_delete_from_table():
     with database.create_connection() as con:
         database.delete_email_domain_list(con)
@@ -33,23 +32,22 @@ def test_delete_from_table():
         assert emails_list == []
 
 
-@prune_db
 def test_insert_into_email():
     name = 'wezxasqw'
     with database.create_connection() as con:
         name_id = database.insert_returning_id_into_email(con, name)
+        print(name_id)
         assert name_id is not None
 
 
-@prune_db
 def test_insert_into_list():
     list_name = 'alotof'
     with database.create_connection() as con:
         list_id = database.insert_returning_id_into_list(con, list_name)
+        print(list_id)
         assert list_id is not None
 
 
-@prune_db
 def test_insert_into_domain():
     name = '1secmail.com'
     with database.create_connection() as con:
@@ -57,7 +55,6 @@ def test_insert_into_domain():
         assert domain_id is not None
 
 
-@prune_db
 def test_insert_into_email_domain_list():
     with database.create_connection() as con:
         domain_id = database.insert_returning_id_into_domain(con, '1secmail.com')
@@ -69,22 +66,19 @@ def test_insert_into_email_domain_list():
         assert emails_list == ['wezxasqw@1secmail.com']
 
 
-@prune_db
 def test_insert_email_in_separate_transactions():
     email: str = 'wezxasqw@gmail.com'
     source_name: str = 'alotof'
-    with database.create_connection() as con:
-        result = database.insert_email_in_separate_transactions(con, email, source_name)
-        print(result)
-        assert result is not None
+    result = database.insert_email_in_separate_transactions(email, source_name)
+    print(result)
+    assert result is not None
 
 
-@prune_db
 def test_get_emails_list():
     email: str = 'wezxasqw@gmail.com'
     source_name: str = 'alotof'
 
+    domain_id, email_id, list_id = database.insert_email_in_separate_transactions(email, source_name)
     with database.create_connection() as con:
-        domain_id, email_id, list_id = database.insert_email_in_separate_transactions(con, email, source_name)
         emails_list = database.get_emails_list(con, domain_id)
         assert emails_list == ['wezxasqw@1secmail.com']

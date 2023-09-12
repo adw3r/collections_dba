@@ -52,9 +52,7 @@ def get_emails_list(con: pymysql.Connection, list_id: int, limit: int = 100000, 
 
 
 def delete_email_domain_list(con: pymysql.Connection):
-    stmt = '''
-    delete from email_domain_list
-    '''
+    stmt = '''delete from email_domain_list'''
     try:
         cur = con.cursor()
         cur.execute(stmt)
@@ -65,11 +63,7 @@ def delete_email_domain_list(con: pymysql.Connection):
 
 
 def insert_into_email_domain_list(con: pymysql.Connection, email_id: int, domain_id: int, list_id: int) -> bool:
-    stmt = '''
-    insert into email_domain_list
-        (email_id, domain_id, list_id)
-        values
-        (%(email_id)s, %(domain_id)s, %(list_id)s)
+    stmt = '''insert into email_domain_list (email_id, domain_id, list_id) values (%(email_id)s, %(domain_id)s, %(list_id)s)
     '''
     try:
         cur = con.cursor()
@@ -84,64 +78,56 @@ def insert_into_email_domain_list(con: pymysql.Connection, email_id: int, domain
 
 
 def insert_returning_id_into_email(con: pymysql.Connection, name: str) -> int | None:
-    stmt = '''
-    insert into email (name)
-        values (%(name)s) on duplicate key update name=%(name)s
-    RETURNING id
-
-    '''
     try:
         cur = con.cursor()
-        cur.execute(stmt, {
+        cur.execute('select id from email WHERE name = %(name)s', {'name': name})
+        name_id = cur.fetchone()
+        if name_id:
+            return name_id[0]
+        cur.execute('INSERT INTO email (name) VALUES (%(name)s) RETURNING id', {
             'name': name
         })
         name_id: int = cur.fetchone()[0]
         con.commit()
+        return name_id
     except Exception as error:
         print(error)
         return None
-    else:
-        return name_id
 
 
 def insert_returning_id_into_list(con: pymysql.Connection, name: str) -> int | None:
-    stmt = '''
-    insert into list (name)
-        values (%(name)s) on duplicate key update name=%(name)s
-    RETURNING id
-    '''
+    args = {'name': name}
     try:
         cur = con.cursor()
-        cur.execute(stmt, {
-            'name': name
-        })
-        name_id: int = cur.fetchone()[0]
+        cur.execute('select id from list WHERE name = %(name)s', args)
+        list_id = cur.fetchone()
+        if list_id:
+            return list_id[0]
+        cur.execute('INSERT INTO list (name) VALUES (%(name)s) RETURNING id', args)
+        list_id: int = cur.fetchone()[0]
         con.commit()
+        return list_id
     except Exception as error:
         print(error)
         return None
-    else:
-        return name_id
 
 
 def insert_returning_id_into_domain(con: pymysql.Connection, name: str) -> int | None:
-    stmt = '''
-    insert into domain (name)
-        values (%(name)s) on duplicate key update name=%(name)s
-    RETURNING id
-    '''
     try:
         cur = con.cursor()
-        cur.execute(stmt, {
+        cur.execute('select id from domain WHERE name = %(name)s', {'name': name})
+        list_id = cur.fetchone()
+        if list_id:
+            return list_id[0]
+        cur.execute('INSERT INTO domain (name) VALUES (%(name)s) RETURNING id', {
             'name': name
         })
         name_id: int = cur.fetchone()[0]
         con.commit()
+        return name_id
     except Exception as error:
         print(error)
         return None
-    else:
-        return name_id
 
 
 # def insert_email_in_one_transaction(con: pymysql.Connection, email: str, source_name: str) -> tuple | None:

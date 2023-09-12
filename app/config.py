@@ -5,7 +5,7 @@ import configparser
 import dotenv
 
 ROOT_FOLDER = pathlib.Path(__file__).parent.parent
-ENV_FILENAME = 'local.env'
+ENV_FILENAME = 'prod.env'
 env_ = ROOT_FOLDER / ENV_FILENAME
 dotenv.load_dotenv(env_)
 config = configparser.ConfigParser()

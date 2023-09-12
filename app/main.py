@@ -22,7 +22,7 @@ def main():
         while len(emails) >= 0:
             threads: list[threading.Thread] = []
             print(len(emails))
-            for _ in range(10):
+            for _ in range(150):
                 email = emails.pop()
                 if email:
                     t = threading.Thread(target=database.insert_email_in_separate_transactions, args=(email, source_name))
