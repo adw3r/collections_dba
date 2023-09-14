@@ -164,7 +164,8 @@ def insert_email_in_separate_transactions(email: str, source_name: str) -> tuple
             domain_id = insert_returning_id_into_domain(con, domain)
             email_id = insert_returning_id_into_email(con, username)
             list_id = insert_returning_id_into_list(con, source_name)
-            insertion_result = insert_into_email_domain_list(con, domain_id=domain_id, email_id=email_id, list_id=list_id)
+            insertion_result = insert_into_email_domain_list(con, domain_id=domain_id, email_id=email_id,
+                                                             list_id=list_id)
             if insertion_result:
                 print(email)
                 return domain_id, email_id, list_id

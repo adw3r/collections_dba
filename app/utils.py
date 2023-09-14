@@ -1,6 +1,5 @@
-from typing import Generator
-
 import pathlib
+from typing import Generator
 
 ENCODING = 'latin-1'
 

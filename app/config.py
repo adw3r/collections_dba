@@ -1,6 +1,6 @@
-import pathlib
-import os
 import configparser
+import os
+import pathlib
 
 import dotenv
 
@@ -13,9 +13,7 @@ config.add_section('general')
 config['general'] = os.environ
 environ = config['general']
 
-
 EMAILS_FOLDER = ROOT_FOLDER / 'emails'
-
 
 MYSQL_HOST: str = environ['MYSQL_HOST']
 MYSQL_PORT: int = environ.getint('MYSQL_PORT')
